@@ -4,6 +4,7 @@ import strip from "@rollup/plugin-strip";
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: "./",
   build: {
     outDir: "docs",
     minify: "terser",
