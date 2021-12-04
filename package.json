@@ -25,6 +25,7 @@
   "scripts": {
     "prebuild": "prettier --write src",
     "build": "vite build",
+    "build:only": "vite build",
     "dev": "vite",
     "prepublishOnly": "npm run build",
     "serve": "vite preview"
