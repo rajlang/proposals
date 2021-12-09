@@ -1,4 +1,5 @@
-<script>
+<script context="module">
+  export const prerender = true;
   import User from "./lib/User.svelte";
 </script>
 

@@ -14,6 +14,13 @@
 
   import Auth from "./Auth.svelte";
 
+  import { propose, getProposals } from "./firestore";
+
+  window["firestore"] = {
+    propose,
+    getProposals,
+  };
+
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
 
@@ -149,151 +156,98 @@
     message = msg;
     setTimeout(() => {
       message = null;
-    }, 5e3);
+    }, 10e3);
   }
 </script>
 
 <div>
   {#if user}
-    <div class="profile" transition:fade={{ duration: 300 }}>
-      <h1>
-        Hello {user.displayName}!
-        {(() => {
-          document.title = user.displayName + " - Profile | Raj Lang";
-          return "";
-        })()}
-      </h1>
-      <div class="profile-card">
-        <div class="profile-avatar">
-          <img
-            src={user.photoURL ||
-              `https://avatars.dicebear.com/api/jdenticon/${user.displayName}.svg`}
-            alt={`${user.displayName}'s Profile Pic`}
-          />
-        </div>
-        <div class="profile-info">
-          <h2 class="profile-name">{user.displayName}</h2>
-          <p class="profile-email">
-            {user.email}
-            {#if user.emailVerified}
-              <div class="profile-email-verified">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
-                  <linearGradient
-                    id="a"
-                    x1="10.4"
-                    x2="37.9"
-                    y1="-572.4"
-                    y2="-599.9"
-                    gradientTransform="matrix(1 0 0 -1 0 -562)"
-                    gradientUnits="userSpaceOnUse"
-                  >
-                    <stop offset="0" stop-color="#75daff" />
-                    <stop offset="1" stop-color="#1ea2e4" />
-                  </linearGradient>
-                  <path
-                    fill="url(#a)"
-                    d="M26.3 4.6 28.8 6h2.9c1.6 0 3.2 1 4 2.4l1.5 2.4 2.4 1.5c1.5.8 2.3 2.4 2.4 4v2.9l1.4 2.5c.8 1.4.8 3.2 0 4.6L42 28.8v2.9c0 1.6-1 3.2-2.4 4l-2.4 1.5-1.5 2.4a4.8 4.8 0 0 1-4 2.4h-2.9l-2.5 1.4c-1.4.8-3.2.8-4.6 0L19.2 42h-2.9c-1.6 0-3.2-1-4-2.4l-1.5-2.4-2.4-1.5a4.8 4.8 0 0 1-2.4-4v-2.9l-1.4-2.5a4.8 4.8 0 0 1 0-4.6L6 19.2v-2.9c0-1.6 1-3.2 2.4-4l2.4-1.5 1.5-2.4a4.8 4.8 0 0 1 4-2.4h2.9l2.5-1.4c1.4-.8 3.2-.8 4.6 0z"
-                  />
-                  <path
-                    d="M32.2 16.2 22 26.3l-5.2-5.1a2 2 0 0 0-2.8 0l-1.4 1.4a2 2 0 0 0 0 2.8l8 8c.8.8 2 .8 2.8 0l13-13c.8-.8.8-2 0-2.8L35 16.2a2 2 0 0 0-2.8 0z"
-                    opacity=".1"
-                  />
-                  <path
-                    d="m21 33-8-8c-.6-.5-.6-1.5 0-2l1.4-1.5c.5-.6 1.5-.6 2 0l5.6 5.6 10.5-10.6c.6-.6 1.6-.6 2.1 0l1.5 1.4c.5.6.5 1.6 0 2.2L23 33c-.6.5-1.6.5-2.2 0z"
-                    opacity=".1"
-                  />
-                  <path
-                    fill="#fff"
-                    d="m21.3 32.7-8-8a1 1 0 0 1 0-1.4l1.4-1.4a1 1 0 0 1 1.4 0l5.9 5.9 10.9-11a1 1 0 0 1 1.4 0l1.4 1.5c.4.4.4 1 0 1.4l-13 13a1 1 0 0 1-1.4 0z"
-                  />
-                </svg>
-              </div>
-            {:else}
+    <div class="flex flex-col gap-10" transition:fade={{ duration: 300 }}>
+      <div
+        class="card items-center shadow-2xl compact side bg-gradient-to-r from-green-400 to-blue-500 overflow-visible"
+      >
+        <div class="flex-row items-center space-x-4 card-body">
+          <div>
+            <div class="avatar">
               <div
-                class="profile-email-not-verified"
-                on:mousedown={verifyEmail}
+                class="rounded-full w-24 h-24 ring ring-primary ring-offset-base-100 ring-offset-2"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
-                  <linearGradient
-                    id="a"
-                    x1="9.9"
-                    x2="38.1"
-                    y1="9.9"
-                    y2="38.1"
-                    gradientUnits="userSpaceOnUse"
-                  >
-                    <stop offset="0" stop-color="#ffda1c" />
-                    <stop offset="1" stop-color="#feb705" />
-                  </linearGradient>
-                  <path
-                    fill="url(#a)"
-                    d="M44 24a20 20 0 1 1-40 0 20 20 0 0 1 40 0z"
-                  />
-                  <radialGradient
-                    id="b"
-                    cx="18.2"
-                    cy="13.8"
-                    r="22.4"
-                    gradientUnits="userSpaceOnUse"
-                  >
-                    <stop offset="0" stop-color="#4b4b4b" /><stop
-                      offset=".5"
-                      stop-color="#393939"
-                    />
-                    <stop offset="1" stop-color="#252525" />
-                  </radialGradient>
-                  <path
-                    fill="url(#b)"
-                    d="M24 34c-.7 0-1.3-.2-1.8-.7a2 2 0 0 1-.7-1.6c0-.6.2-1.2.7-1.6.5-.4 1-.6 1.8-.6.7 0 1.3.2 1.8.6.5.4.7 1 .7 1.6 0 .7-.2 1.2-.7 1.7s-1 .6-1.8.6zm2.2-19.3L25.8 27c0 .4-.4.7-.7.7h-2.2a.7.7 0 0 1-.7-.7l-.5-12.2c0-.4.3-.7.7-.7h3.1c.4 0 .8.3.7.7z"
-                  />
-                </svg>
+                <img
+                  src={user.photoURL ||
+                    `https://avatars.dicebear.com/api/jdenticon/${user.displayName}.svg`}
+                  alt={`${user.displayName}'s Profile Pic`}
+                />
               </div>
-            {/if}
-          </p>
+            </div>
+          </div>
+          <div class="divider divider-vertical" />
+          <div>
+            <h2 class="card-title">{user.displayName}</h2>
+            <p class="text-base-content text-opacity-40">
+              {user.email}
+              {#if user.emailVerified}
+                <span
+                  data-tip="✔️ Verified Email"
+                  class="tooltip badge badge-xs bg-success tooltip-success tooltip-right"
+                />
+              {:else}
+                <span
+                  data-tip="⚠️ Email Not Verified"
+                  class="tooltip badge badge-xs bg-error tooltip-error tooltip-right"
+                />
+              {/if}
+            </p>
+          </div>
         </div>
       </div>
-      <div class="profile-settings">
-        <div class="profile-simple-settings">
-          <button on:click={signOut}>Sign Out</button>
-          <button on:click={resetPassword}>Forgot Password</button>
-          <button on:click={changeEmail}>Change Email</button>
-          <button on:click={changeUsername}>Change Username</button>
+      <div class="flex flex-row gap-10">
+        <div class="flex flex-col gap-3">
+          <button class="btn btn-primary" on:click={signOut}> Sign Out </button>
+          <button class="btn btn-primary" on:click={changeEmail}>
+            Change Email
+          </button>
+          <button class="btn btn-primary" on:click={changeUsername}>
+            Change Username
+          </button>
         </div>
-        <div class="profile-danger-settings">
-          <button on:click={deleteAccount}> Delete Account </button>
+        <div class="flex flex-col gap-3 self-center">
+          {#if !user.emailVerified}
+            <button class="btn btn-primary" on:click={verifyEmail}>
+              Verify Email
+            </button>
+          {/if}
+          <button class="btn bg-warning" on:click={resetPassword}>
+            Forgot Password
+          </button>
+          <button class="btn bg-error" on:click={deleteAccount}>
+            Delete Account
+          </button>
         </div>
       </div>
     </div>
   {:else}
     <div transition:fade={{ duration: 300 }}>
-      <h2>Sign In | Sign Up</h2>
-      {(() => {
-        document.title = "Sign In | Raj Lang";
-        return "";
-      })()}
       <Auth />
     </div>
   {/if}
-  <!-- Snakbar -->
+  <!-- Notification -->
   {#if !!message}
-    <div class="snakbar-container" transition:fade={{ duration: 300 }}>
-      <div class="snakbar">
-        <div class="snakbar-close" on:click={(_) => (message = "")}>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-            <path
-              d="m4.21 4.39.08-.1a1 1 0 0 1 1.32-.08l.1.08L12 10.6l6.3-6.3a1 1 0 1 1 1.4 1.42L13.42 12l6.3 6.3a1 1 0 0 1 .08 1.31l-.08.1a1 1 0 0 1-1.32.08l-.1-.08L12 13.4l-6.3 6.3a1 1 0 0 1-1.4-1.42L10.58 12l-6.3-6.3a1 1 0 0 1-.08-1.31l.08-.1-.08.1Z"
-            />
-          </svg>
-        </div>
-        <div class="snakbar-content">
-          {message}
+    <div
+      class="absolute inset-0 grid place-items-center bg-black bg-opacity-50"
+    >
+      <div class="alert w-max shadow-lg" transition:fade={{ duration: 300 }}>
+        <div class="flex-1 justify-between gap-5">
+          <p class="">
+            {message}
+          </p>
+          <button class="" on:click={(_) => (message = "")}> ❌ </button>
         </div>
       </div>
     </div>
   {/if}
 </div>
 
-<style>
+<!-- <style>
   * {
     box-sizing: border-box;
     margin: 0;
@@ -491,4 +445,4 @@
     transform: translateY(1rem);
     transition: 0.3s;
   }
-</style>
+</style> -->
