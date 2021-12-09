@@ -74,7 +74,7 @@
         })
           .then(() => {
             // Profile updated!
-            window.locaion.reload();
+            window.location.reload();
           })
           .catch((error) => {
             // An error occurred

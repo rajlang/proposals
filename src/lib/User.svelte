@@ -14,13 +14,6 @@
 
   import Auth from "./Auth.svelte";
 
-  import { propose, getProposals } from "./firestore";
-
-  window["firestore"] = {
-    propose,
-    getProposals,
-  };
-
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
 
