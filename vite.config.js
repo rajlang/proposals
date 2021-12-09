@@ -6,8 +6,11 @@ import strip from "@rollup/plugin-strip";
 export default defineConfig({
   base: "./",
   build: {
-    outDir: "docs",
+    // outDir: "docs",
     minify: "terser",
   },
-  plugins: [svelte(), strip()],
+  plugins: [
+    svelte(),
+    strip()
+  ],
 });
