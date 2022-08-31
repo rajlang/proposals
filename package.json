@@ -31,7 +31,7 @@
     "serve": "vite preview"
   },
   "dependencies": {
-    "firebase": "^9.5.0",
+    "firebase": "^9.9.3",
     "firebaseui": "^6.0.0"
   },
   "devDependencies": {
